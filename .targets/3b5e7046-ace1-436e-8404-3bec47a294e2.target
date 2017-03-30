@@ -1,0 +1,69 @@
+type: onprem
+server:
+  host: apim
+org:
+  id: 58da2a1ae4b03bd7ca846eb2
+  name: openabank
+  displayName: openabank
+  orgType: apiProvider
+  status: active
+  advPortalOverride: true
+  extUaaAuthenticated: false
+  requiresSSLClientCertCheck: false
+  dormant: false
+  url: 'https://apim/v1/orgs/58da2a1ae4b03bd7ca846eb2'
+catalog:
+  id: 58da2a1ae4b03bd7ca846ebe
+  orgId: 58da2a1ae4b03bd7ca846eb2
+  name: Sandbox
+  shortName: sb
+  owner:
+    id: 58da2a1ae4b03bd7ca846ead
+    username: apimadmin@think.ibm
+    context: apimanager
+    idpId: 58da27b8e4b03bd7ca8467d0
+    email: apimadmin@think.ibm
+    firstName: apiadmin
+    lastName: apiadmin
+    status: ACTIVE
+    lastLoginTime: '2017-03-30T03:31:11.218+0000'
+    url: 'https://apim/v1/users/58da2a1ae4b03bd7ca846ead'
+  apiCenter: false
+  baseUrl: 'https://datapower/openabank/sb'
+  portalType: ADVANCED
+  portalUrl: 'https://apim/openabank/sb'
+  customPortalUrl: 'https://ibmportal/openabank/sb'
+  gatewayType: DataPowerGateway
+  idp: 58da2a1be4b03bd7ca846ebf
+  idps:
+    - 58da2a1be4b03bd7ca846ebf
+  availableRoles:
+    - viewer
+    - developer
+  default: false
+  autoDeploy: true
+  gatewayClusterUrl: /gatewayClusters/58da27c9e4b03bd7ca846858
+  restrictedDeployment: false
+  invitationEnabled: true
+  selfSignUpEnabled: true
+  spaceEnabled: false
+  spaceIds:
+    - 58da2a1be4b03bd7ca846ec7
+  testAppEnabled: true
+  testAppCredentials:
+    clientId: 16e578d5-9448-45ab-9c2c-0ac507428484
+    clientSecret: eM2cS2cT8sX4cD5jO0gH4iR1uL8oB5hR8yS2wC5rI1eI6vN7rK
+  createdAt: '2017-03-28T09:17:15.375+0000'
+  updatedAt: '2017-03-28T09:45:51.035+0000'
+  createdBy: admin
+  updatedBy: apimadmin@think.ibm
+  url: >-
+    https://apim/v1/orgs/58da2a1ae4b03bd7ca846eb2/environments/58da2a1ae4b03bd7ca846ebe
+  productDeploymentApprovalRequiredStates: []
+  orgName: openabank
+space:
+  none: true
+app:
+  none: true
+id: 3b5e7046-ace1-436e-8404-3bec47a294e2
+target: 1.0.0

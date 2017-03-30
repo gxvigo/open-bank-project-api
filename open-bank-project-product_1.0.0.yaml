@@ -1,0 +1,23 @@
+product: 1.0.0
+info:
+  name: open-bank-project-product
+  title: Open Bank Project Product
+  version: 1.0.0
+visibility:
+  view:
+    type: public
+  subscribe:
+    type: authenticated
+plans:
+  default:
+    title: Default Plan
+    description: Default Plan
+    approval: false
+    rate-limit:
+      value: 100/hour
+      hard-limit: false
+apis:
+  open-bank-project-api:
+    $ref: open-bank-project-api_v1.1.0.yaml
+  test:
+    $ref: test_1.0.0.yaml

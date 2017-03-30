@@ -1,0 +1,759 @@
+definitions:
+  Root:
+    type: object
+    description: Details of the OBP API
+    properties:
+      version:
+        type: string
+        description: Version of running API
+        example: 1.0.0
+      git_commit:
+        type: string
+        description: Latest git commit of API
+        example: 7cf09e1
+      hosted_by:
+        type: object
+        properties:
+          organization:
+            type: string
+          email:
+            type: string
+          phone:
+            type: string
+  Bank:
+    type: object
+    properties:
+      full_name:
+        type: string
+      id:
+        type: string
+      logo:
+        type: string
+      short_name:
+        type: string
+      website:
+        type: string
+    required:
+      - id
+      - short_name
+      - full_name
+      - logo
+      - website
+  Banks:
+    type: object
+    properties:
+      banks:
+        type: array
+        items:
+          $ref: '#/definitions/Bank'
+  Owner:
+    properties:
+      id:
+        type: string
+        description: Owners Account Identifier
+        example: joe.bloggs@example.com
+      provider:
+        type: string
+        description: Provider details
+        example: 'https://psd2-api.openbankproject.com'
+      display_name:
+        type: string
+        description: Display name of account owner
+        example: Joe Bloggs
+    description: Provides details of an account owner
+    additionalProperties: false
+    type: object
+  View:
+    properties:
+      id:
+        type: string
+        description: View Identifier
+        example: owner
+      short_name:
+        type: string
+        description: Description of the view
+        example: Owner
+    type: object
+    description: Provides a view of an account
+    additionalProperties: false
+  CurrencyAmount:
+    type: object
+    properties:
+      currency:
+        type: string
+        description: Currency code
+        example: NZD
+      amount:
+        type: number
+        description: Current balance of the account
+        example: 100
+  AccountIdentifier:
+    type: object
+    properties:
+      bank_id:
+        type: string
+        description: Identifier of destination bank
+        example: my-bank-x01
+      account_id:
+        type: string
+        description: Identifier of destination account
+        example: a0132456789
+  Account:
+    properties:
+      id:
+        type: string
+        description: Account Identifier
+        example: 123465789
+      label:
+        type: string
+        description: Account Label
+        example: Current
+      number:
+        type: string
+        description: Account Number
+      owners:
+        type: string
+      type:
+        type: string
+        description: Account Type
+        example: credit
+      balance:
+        type: number
+        format: double
+      IBAN:
+        type: string
+        description: International Bank Account Number
+        example: null
+      swift_bic:
+        type: string
+        description: SWIFT BIC Code for the account
+        example: TSB XXX
+    description: Provides details of a single account
+    additionalProperties: false
+  Accounts:
+    type: array
+    items:
+      $ref: '#/definitions/Account'
+  CreateTransactionRequest:
+    type: object
+    properties:
+      to:
+        $ref: '#/definitions/AccountIdentifier'
+      value:
+        $ref: '#/definitions/CurrencyAmount'
+      description:
+        type: string
+        description: Description of transaction
+        example: Beer money
+  TransactionRequest:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Transaction Request Identifier
+        example: 0ab9f1b4-8fdf-479f-b135-55f07aa0ce62
+      type:
+        type: string
+        description: Transaction Request type
+        example: Credit Transfer
+      from:
+        $ref: '#/definitions/AccountIdentifier'
+      body:
+        $ref: '#/definitions/CreateTransactionRequest'
+      transaction_ids:
+        type: string
+        description: List of related Transaction Identifiers
+        example: 49e94f8c-bc77-412a-abd5-35cb67db5002
+      status:
+        type: string
+        description: Status of the Transaction Request
+        example: COMPLETED
+      start_date:
+        type: string
+        format: date-time
+        description: Date and time the Transaction Request was made
+        example: '2016-11-02T13:56:01.000Z'
+      end_date:
+        type: string
+        format: date-time
+        description: Date and time the Transaction Request was completed
+      charge:
+        type: object
+        properties:
+          summary:
+            type: string
+            description: Description of charges applied
+            example: Total charges for completed transaction
+          value:
+            $ref: '#/definitions/CurrencyAmount'
+  TransactionRequests:
+    type: array
+    items:
+      $ref: '#/definitions/TransactionRequest'
+  Transaction:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Transaction Identifier
+        example: ea70f51a-2f14-4854-85b0-e1fbcd604641
+      this_account:
+        $ref: '#/definitions/Account'
+      other_account:
+        $ref: '#/definitions/Account'
+      details:
+        type: object
+        properties:
+          type:
+            type: string
+            description: Type of transaction
+            example: Credit Payment
+          description:
+            type: string
+            description: Description of transaction
+            example: Beer money
+          posted:
+            type: string
+            format: date-time
+            description: Date and time the transaction request was made
+            example: '2016-11-02T13:47:25.000Z'
+          completed:
+            type: string
+            format: date-time
+            description: Date and time the transaction request was completed
+          new_balance:
+            $ref: '#/definitions/CurrencyAmount'
+          value:
+            $ref: '#/definitions/CurrencyAmount'
+      metadata:
+        type: object
+        properties:
+          narrative:
+            type: string
+            description: Description of the transaction requests
+  Transactions:
+    type: array
+    items:
+      $ref: '#/definitions/Transaction'
+  Error:
+    properties:
+      code:
+        format: int32
+        type: integer
+      message:
+        type: string
+    required:
+      - code
+      - message
+    type: object
+info:
+  contact:
+    name: Project OBP
+    url: 'http://www.integration.works'
+    email: info@integration.works
+  description: An Open Source API for Banks.
+  title: Open Bank Project API
+  version: v1.1.0
+  x-ibm-name: open-bank-project-api
+parameters:
+  BANK_ID:
+    name: BANK_ID
+    in: path
+    description: Bank Identifier
+    required: true
+    type: string
+  ACCOUNT_ID:
+    name: ACCOUNT_ID
+    in: path
+    description: Account Identifier
+    required: true
+    type: string
+  VIEW_ID:
+    name: VIEW_ID
+    in: path
+    description: View Identifier
+    required: true
+    type: string
+  TRANSACTION_REQUEST_TYPE:
+    name: TRANSACTION_REQUEST_TYPE
+    in: path
+    description: Type of transaction request
+    required: true
+    type: string
+  TRANSACTION_ID:
+    name: TRANSACTION_ID
+    in: path
+    description: Transaction Identifier
+    required: true
+    type: string
+paths:
+  /banks:
+    get:
+      description: >-
+        <p>Get banks on this API instance Returns a list of banks supported on
+        this server:</p><ul>  <li>ID used as parameter in URLs</li>  <li>Short
+        and full name of bank</li>  <li>Logo URL</li>  <li>Website</li></ul>
+      operationId: 1_2_1-getBanks
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: string
+        '400':
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+      summary: Get Banks
+      tags:
+        - '1_2_1'
+        - IMPLEMENTED
+      parameters:
+        - name: data
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/Bank'
+    post:
+      responses:
+        '200':
+          description: 200 OK
+      tags:
+        - '1_2_1'
+        - IMPLEMENTED
+      summary: Post Banks
+      operationId: 1_2_1-postBanks
+      description: >-
+        <p>Post banks on this API instance add a bank supported on this
+        server:</p><ul>  <li>ID used as parameter in URLs</li>  <li>Short and
+        full name of bank</li>  <li>Logo URL</li>  <li>Website</li></ul>
+      parameters:
+        - name: data
+          required: false
+          in: body
+          schema:
+            type: object
+  '/banks/{BANK_ID}':
+    get:
+      parameters:
+        - $ref: '#/parameters/BANK_ID'
+      description: >-
+        <p>Get the bank specified by BANK_ID Returns information about a single
+        bank specified by BANK_ID including:</p><ul>  <li>Short and full name of
+        bank</li>  <li>Logo URL</li>  <li>Website</li></ul>
+      operationId: 1_2_1-bankById
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Bank'
+        '400':
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+      summary: Get Bank
+      tags:
+        - '1_2_1'
+        - '- NOT_IMPLEMENTED'
+  '/banks/{BANK_ID}/transaction-request-types':
+    get:
+      parameters:
+        - $ref: '#/parameters/BANK_ID'
+      description: >-
+        <p>Get the list of the Transaction Request Types supported by the
+        bank.</p><p>Authentication is Optional</p>
+      operationId: 2_1_0-getTransactionRequestTypesSupportedByBank
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+      summary: Get the Transaction Request Types supported by the bank
+      tags:
+        - '2_1_0'
+        - NOT_IMPLEMENTED
+  '/banks/{BANK_ID}/transaction-types':
+    get:
+      parameters:
+        - $ref: '#/parameters/BANK_ID'
+      description: >-
+        <p>Get Transaction Types for the bank specified by BANK_ID:</p><p>Lists
+        the possible Transaction Types available at the bank (as opposed to
+        Transaction Request Types which are the possible ways Transactions can
+        be created by this API Server).</p><ul>  <li>id : Unique transaction
+        type id across the API instance. SHOULD be a UUID. MUST be unique.</li> 
+        <li>bank_id : The bank that supports this TransactionType</li> 
+        <li>short_code : A short code (SHOULD have no-spaces) which MUST be
+        unique across the bank. May be stored with Transactions to link
+        here</li>  <li>summary : A succinct summary</li>  <li>description : A
+        longer description</li>  <li>charge : The charge to the customer for
+        each one of these</li></ul><p>Authentication is Optional</p>
+      operationId: 2_0_0-getTransactionTypes
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+      summary: Get transaction-types offered by the bank
+      tags:
+        - '2_0_0'
+        - NOT_IMPLEMENTED
+  '/banks/{BANK_ID}/accounts/':
+    post:
+      parameters:
+        - $ref: '#/parameters/BANK_ID'
+      description: >-
+        <p>Create Account at bank specified by BANK_ID with Id specified by
+        ACCOUNT_ID.</p><p>The User can create an Account for themself or an
+        Account for another User if they have CanCreateAccount role.</p><p>If
+        USER_ID is not specified the account will be owned by the logged in
+        User.</p><p>Note: The Amount must be zero.</p>
+      operationId: 2_0_0-createAccount
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: string
+        '400':
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+      summary: Create Account
+      tags:
+        - '2_0_0'
+        - IMPLEMENTED
+    get:
+      responses:
+        '200':
+          description: 200 OK
+      operationId: 2_0_0-retrieveAccounts
+      tags:
+        - '2_0_0'
+        - IMPLEMENTED
+      summary: Retrieve Accounts
+      parameters:
+        - name: Account
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/Account'
+        - $ref: '#/parameters/BANK_ID'
+  '/banks/{BANK_ID}/accounts/{ACCOUNT_ID}/{VIEW_ID}/transaction-requests':
+    get:
+      parameters:
+        - $ref: '#/parameters/BANK_ID'
+        - $ref: '#/parameters/ACCOUNT_ID'
+        - $ref: '#/parameters/VIEW_ID'
+      description: >-
+        <p>Returns transaction requests for account specified by ACCOUNT_ID at
+        bank specified by BANK_ID.</p><p>The VIEW_ID specified must be 'owner'
+        and the user must have access to this view.</p><p>Version 2.0.0 now
+        returns charge information.</p><p>Transaction Requests serve to initiate
+        transactions that may or may not proceed. They contain information
+        including:</p><ul>  <li>Transaction Request Id</li>  <li>Type</li> 
+        <li>Status (INITIATED, COMPLETED)</li>  <li>Challenge (in order to
+        confirm the request)</li>  <li>From Bank / Account</li>  <li>Details
+        including Currency, Value, Description and other initiation information
+        specific to each type. (Could potentialy include a list of future
+        transactions.)</li>  <li>Related Transactions</li></ul><p>PSD2 Context:
+        PSD2 requires transparency of charges to the customer. This endpoint
+        provides the charge that would be applied if the Transaction Request
+        proceeds - and a record of that charge there after. The customer can
+        proceed with the Transaction by answering the security challenge.</p>
+      operationId: 2_1_0-getTransactionRequests
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/TransactionRequests'
+        '400':
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+      summary: Get Transaction Requests.
+      tags:
+        - '2_1_0'
+        - NOT_IMPLEMENTED
+  '/banks/{BANK_ID}/accounts/{ACCOUNT_ID}/{VIEW_ID}/transactions/{TRANSACTION_ID}/transaction':
+    get:
+      parameters:
+        - $ref: '#/parameters/BANK_ID'
+        - $ref: '#/parameters/ACCOUNT_ID'
+        - $ref: '#/parameters/VIEW_ID'
+        - $ref: '#/parameters/TRANSACTION_ID'
+      description: >-
+        <p>Returns one transaction specified by TRANSACTION_ID of the account
+        ACCOUNT_ID and <a href="#1_2_1-getViewsForBankAccount">moderated</a> by
+        the view (VIEW_ID).</p><p>Authentication via OAuth is required if the
+        view is not public.</p>
+      operationId: 1_2_1-getTransactionByIdForBankAccount
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Transaction'
+        '400':
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+      summary: Get transaction by id.
+      tags:
+        - '1_2_1'
+        - NOT_IMPLEMENTED
+  '/banks/{BANK_ID}/accounts/{ACCOUNT_ID}/{VIEW_ID}/transaction-request-types/{TRANSACTION_REQUEST_TYPE}/transaction-requests':
+    post:
+      parameters:
+        - $ref: '#/parameters/BANK_ID'
+        - $ref: '#/parameters/ACCOUNT_ID'
+        - $ref: '#/parameters/VIEW_ID'
+        - $ref: '#/parameters/TRANSACTION_REQUEST_TYPE'
+      description: >-
+        <p>Initiate a Payment via a Transaction Request.</p><p>This is the
+        preferred method to create a payment and supersedes makePayment in
+        1.2.1.</p><p>PSD2 Context: Third party access access to payments is a
+        core tenent of PSD2.</p><p>This call satisfies that requirement from
+        several perspectives:</p><p>1) A transaction can be initiated by a third
+        party application.</p><p>2) The customer is informed of the charge that
+        will incurred.</p><p>3) The call uses delegated authentication
+        (OAuth)</p><p>See <a
+        href="https://github.com/OpenBankProject/Hello-OBP-DirectLogin-Python/blob/master/hello_payments.py">this
+        python code</a> for a complete example of this flow.</p><p>In sandbox
+        mode, if the amount is less than 100 (any currency), the transaction
+        request will create a transaction without a challenge, else a challenge
+        will need to be answered.</p><p>You can transfer between different
+        currency accounts. (new in 2.0.0). The currency in body must match the
+        sending account.</p><p>Currently TRANSACTION_REQUEST_TYPE must be set to
+        SANDBOX_TAN</p><p>The following static FX rates are available in sandbox
+        mode:</p><p>{  "GBP":{  "AED":5.22,  "INR":94.66,  "JPY":154.47, 
+        "USD":1.42,  "EUR":1.26  },  "AED":{  "GBP":0.19,  "INR":18.15, 
+        "JPY":29.61,  "USD":0.27,  "EUR":0.24  },  "INR":{  "GBP":0.011, 
+        "AED":0.055,  "JPY":1.63,  "USD":0.015,  "EUR":0.013  },  "JPY":{ 
+        "GBP":0.0065,  "AED":0.034,  "INR":0.61,  "USD":0.0092,  "EUR":0.0081 
+        },  "USD":{  "GBP":0.7,  "AED":3.67,  "INR":66.65,  "JPY":108.77, 
+        "EUR":0.89  },  "EUR":{  "GBP":0.79,  "AED":4.14,  "INR":75.2, 
+        "JPY":122.71,  "USD":1.13  } }</p><p>The payer is set in the URL. Money
+        comes out of the BANK_ID and ACCOUNT_ID specified in the URL</p><p>The
+        payee is set in the request body. Money goes into the BANK_ID and
+        ACCOUNT_IDO specified in the request body.</p><p>Authentication is
+        Mandatory</p>
+      operationId: 2_1_0-createTransactionRequest
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/TransactionRequest'
+        '400':
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+      summary: Create Transaction Request.
+      tags:
+        - '2_1_0'
+        - NOT_IMPLEMENTED
+  /my/accounts:
+    get:
+      description: >-
+        <p>Get private accounts at all banks (Authenticated access) Returns the
+        list of accounts containing private views for the user at all banks. For
+        each account the API returns the ID and the available
+        views.</p><p>Authentication is Mandatory</p>
+      operationId: 2_0_0-privateAccountsAllBanks
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Accounts'
+        '400':
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+      summary: Get Accounts at all Banks (Private)
+      tags:
+        - '2_0_0'
+        - NOT_IMPLEMENTED
+  '/my/banks/{BANK_ID}/accounts':
+    get:
+      parameters:
+        - $ref: '#/parameters/BANK_ID'
+      description: >-
+        <p>Get private accounts at one bank (Authenticated access). Returns the
+        list of accounts containing private views for the user at BANK_ID. For
+        each account the API returns the ID and the available
+        views.</p><p>Authentication via OAuth is required.</p>
+      operationId: 2_0_0-privateAccountsAtOneBank
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Accounts'
+        '400':
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+      summary: Get Accounts at Bank (Private)
+      tags:
+        - '2_0_0'
+        - NOT_IMPLEMENTED
+  '/my/banks/{BANK_ID}/accounts/{ACCOUNT_ID}/account':
+    get:
+      parameters:
+        - $ref: '#/parameters/BANK_ID'
+        - $ref: '#/parameters/ACCOUNT_ID'
+      description: >-
+        <p>Information returned about the account specified by
+        ACCOUNT_ID:</p><ul>  <li>Number</li>  <li>Owners</li>  <li>Type</li> 
+        <li>Balance</li>  <li>IBAN</li></ul><p>This call returns the owner view
+        and requires access to that view.</p><p>OAuth authentication is
+        required</p>
+      operationId: 2_0_0-getCoreAccountById
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Account'
+        '400':
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+      summary: Get Account by Id (Core)
+      tags:
+        - '2_0_0'
+        - NOT_IMPLEMENTED
+  '/my/banks/{BANK_ID}/accounts/{ACCOUNT_ID}/transactions':
+    get:
+      parameters:
+        - $ref: '#/parameters/BANK_ID'
+        - $ref: '#/parameters/ACCOUNT_ID'
+      description: >-
+        <p>Returns transactions list (Core info) of the account specified by
+        ACCOUNT_ID.</p><p>Authentication is required.</p><p>Possible custom
+        headers for pagination:</p><ul>  <li>obp_sort_by=CRITERIA ==&gt; default
+        value: "completed" field</li>  <li>obp_sort_direction=ASC/DESC ==&gt;
+        default value: DESC</li>  <li>obp_limit=NUMBER ==&gt; default value:
+        50</li>  <li>obp_offset=NUMBER ==&gt; default value: 0</li> 
+        <li>obp_from_date=DATE =&gt; default value: date of the oldest
+        transaction registered (format below)</li>  <li>obp_to_date=DATE =&gt;
+        default value: date of the newest transaction registered (format
+        below)</li></ul><p><strong>Date format parameter</strong>:
+        "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" (2014-07-01T00:00:00.000Z) ==&gt; time
+        zone is UTC.</p>
+      operationId: 2_0_0-getCoreTransactionsForBankAccount
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Transactions'
+        '400':
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+      summary: Get Transactions for Account (Core)
+      tags:
+        - '2_0_0'
+        - NOT_IMPLEMENTED
+  /root:
+    get:
+      description: >-
+        <p>Returns information about:</p><ul>  <li>API version</li>  <li>Hosted
+        by information</li>  <li>Git Commit</li></ul>
+      operationId: 1_2_1-root
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+      summary: The root of the API
+      tags:
+        - '1_2_1'
+        - NOT_IMPLEMENTED
+schemes:
+  - https
+swagger: '2.0'
+x-ibm-configuration:
+  enforced: true
+  testable: true
+  phase: realized
+  cors:
+    enabled: true
+  gateway: datapower-gateway
+  assembly:
+    execute:
+      - operation-switch:
+          title: operation-switch
+          case:
+            - operations:
+                - 1_2_1-getBanks
+              execute:
+                - gatewayscript:
+                    title: gatewayscript
+                    version: 1.0.0
+                    source: 'console.warn("### In 1_2_1-getBanks")'
+                - invoke:
+                    title: invoke-get-banks
+                    timeout: 60
+                    verb: GET
+                    cache-response: protocol
+                    cache-ttl: 900
+                    stop-on-error:
+                      - null
+                    version: 1.0.0
+                    target-url: 'http://rabbitmqapiservice:8080/api/banks'
+            - operations:
+                - 1_2_1-postBanks
+              execute:
+                - gatewayscript:
+                    title: gatewayscript
+                    version: 1.0.0
+                    source: 'console.warn("### In 1_2_1-postBanks")'
+                - invoke:
+                    title: invoke-post-banks
+                    timeout: 60
+                    verb: POST
+                    cache-response: protocol
+                    cache-ttl: 900
+                    stop-on-error:
+                      - null
+                    version: 1.0.0
+                    target-url: 'http://rabbitmqapiservice:8080/api/banks'
+            - operations:
+                - 2_0_0-retrieveAccounts
+              execute:
+                - gatewayscript:
+                    title: gatewayscript
+                    version: 1.0.0
+                    source: 'console.warn("### In 2_0_0-retrieveAccounts")'
+            - operations:
+                - 2_0_0-createAccount
+              execute:
+                - gatewayscript:
+                    title: gatewayscript
+                    version: 1.0.0
+                    source: 'console.warn("### In 2_0_0-createAccounts")'
+          otherwise: []
+          version: 1.0.0
+    catch: []
+  properties:
+    backend.host:
+      value: 'http://rabbitmqapiservice:8080'
+      description: API Endpoint
+      encoded: false
+  catalogs: {}
+consumes:
+  - application/json
+produces:
+  - application/json
+host: datapower
+securityDefinitions:
+  api-key-security:
+    type: apiKey
+    description: ''
+    in: header
+    name: X-IBM-Client-Id
+security:
+  - api-key-security: []
+basePath: /api
