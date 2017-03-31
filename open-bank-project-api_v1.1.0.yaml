@@ -251,7 +251,9 @@ info:
     name: Project OBP
     url: 'http://www.integration.works'
     email: info@integration.works
-  description: An Open Source API for Banks.
+  description: >-
+    ## An Open Source API for Banks. Implemented with the best API Management
+    solution after the invention of iPhone
   title: Open Bank Project API
   version: v1.1.0
   x-ibm-name: open-bank-project-api
@@ -328,10 +330,10 @@ paths:
         full name of bank</li>  <li>Logo URL</li>  <li>Website</li></ul>
       parameters:
         - name: data
-          required: false
+          required: true
           in: body
           schema:
-            type: object
+            $ref: '#/definitions/Bank'
   '/banks/{BANK_ID}':
     get:
       parameters:
@@ -401,7 +403,7 @@ paths:
       tags:
         - '2_0_0'
         - NOT_IMPLEMENTED
-  '/banks/{BANK_ID}/accounts/':
+  '/banks/{BANK_ID}/accounts':
     post:
       parameters:
         - $ref: '#/parameters/BANK_ID'
@@ -726,7 +728,33 @@ x-ibm-configuration:
                 - gatewayscript:
                     title: gatewayscript
                     version: 1.0.0
-                    source: 'console.warn("### In 2_0_0-retrieveAccounts")'
+                    source: 'console.warn("### In 2_0_0-retrieveAccounts");'
+                - map:
+                    title: map
+                    inputs:
+                      BANK_ID:
+                        schema:
+                          type: string
+                        variable: request.parameters.BANK_ID
+                    outputs:
+                      header_bank_id:
+                        schema:
+                          type: string
+                        variable: message.header.bankId
+                    actions:
+                      - set: header_bank_id
+                        from: BANK_ID
+                    version: 1.0.0
+                - invoke:
+                    title: invoke-get-accounts
+                    timeout: 60
+                    verb: GET
+                    cache-response: protocol
+                    cache-ttl: 900
+                    stop-on-error:
+                      - null
+                    version: 1.0.0
+                    target-url: 'http://rabbitmqapiservice:8080/api/accounts'
             - operations:
                 - 2_0_0-createAccount
               execute:
@@ -734,6 +762,33 @@ x-ibm-configuration:
                     title: gatewayscript
                     version: 1.0.0
                     source: 'console.warn("### In 2_0_0-createAccounts")'
+                - map:
+                    title: map
+                    inputs:
+                      BANK_ID:
+                        schema:
+                          type: string
+                        variable: request.parameters.BANK_ID
+                    outputs:
+                      header_bank_id:
+                        schema:
+                          type: string
+                        variable: message.header.bankId
+                    actions:
+                      - set: header_bank_id
+                        from: BANK_ID
+                    version: 1.0.0
+                - invoke:
+                    title: invoke-post-accounts
+                    timeout: 60
+                    verb: POST
+                    cache-response: protocol
+                    cache-ttl: 900
+                    stop-on-error:
+                      - null
+                    version: 1.0.0
+                    target-url: >-
+                      http://rabbitmqapiservice:8080/api/accounts?bankId=${request.parameters.BANK_ID}
           otherwise: []
           version: 1.0.0
     catch: []

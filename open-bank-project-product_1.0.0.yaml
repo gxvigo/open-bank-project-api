@@ -9,6 +9,13 @@ visibility:
   subscribe:
     type: authenticated
 plans:
+  restricted:
+    title: Restricted
+    apis: {}
+    rate-limits:
+      rate-limit-5-30sec:
+        value: 5/30second
+        hard-limit: true
   default:
     title: Default Plan
     description: Default Plan
@@ -19,5 +26,3 @@ plans:
 apis:
   open-bank-project-api:
     $ref: open-bank-project-api_v1.1.0.yaml
-  test:
-    $ref: test_1.0.0.yaml
